@@ -1,0 +1,9 @@
+id,name,country,features,base_rating,base_count,logo_url
+app_1,Venmo,US,"social,instant,free",4.2,1500,
+app_2,CashApp,US,"bitcoin,fast,simple",4.1,1200,
+app_3,Zelle,US,"instant,bank-integrated,no-fee",3.8,5000,
+app_4,Wise,UK,"low fee,international,transparent",4.8,800,
+app_5,Revolut,UK,"travel,crypto,fast",4.6,1100,
+app_6,Paytm,IN,"wallet,bill-pay,fast",4.0,9000,
+app_7,PhonePe,IN,"upi,fast,secure",4.5,8500,
+app_8,PayPal,US,"secure,global,slow",3.5,10000,
