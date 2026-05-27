@@ -1,6 +1,7 @@
 import Dexie, { Table } from 'dexie';
 import { PaymentApp, Review } from '../types';
 import { calculateScore } from '../utils/scoring';
+import { defaultApps, defaultReviews } from '../seed_data/default_data';
 
 class PaymentAppDB extends Dexie {
     apps!: Table<PaymentApp>;
@@ -39,8 +40,24 @@ export const recomputeAllScores = async (preference: 'lowest-fee' | 'fastest' | 
     }
 };
 
+// Seed DB if empty
+export const seedDatabaseIfEmpty = async () => {
+    const appsCount = await db.apps.count();
+    if (appsCount === 0) {
+        const appsToSeed = defaultApps.map(app => ({
+            ...app,
+            cached_score: 0
+        })) as PaymentApp[];
+        await db.apps.bulkPut(appsToSeed);
+        await db.reviews.bulkAdd(defaultReviews);
+        await recomputeAllScores('lowest-fee');
+        console.log('Database auto-seeded successfully!');
+    }
+};
+
 // Reset DB
 export const resetDatabase = async () => {
     await db.delete();
     await db.open();
+    await seedDatabaseIfEmpty();
 };

@@ -1,4 +1,4 @@
-import { PaymentApp, Review, ScoringParams } from '../types';
+import { ScoringParams } from '../types';
 
 export const calculateScore = ({ app, reviews, selectedPreference }: ScoringParams): number => {
     // 1. Rating Score
@@ -40,15 +40,6 @@ export const calculateScore = ({ app, reviews, selectedPreference }: ScoringPara
 
     // 4. Feature Match
     // feature_match = 100 if selected preference string is contained in app.features, else 0
-    const preferenceMap: Record<string, string> = {
-        'lowest-fee': 'low fee',
-        'fastest': 'instant',
-        'best-rated': 'secure' // Mapping "best-rated" generally to security/trust features or just high ratings, 
-        // but per requirement: "if selected preference string is contained".
-        // However, typically "best-rated" isn't a feature string. 
-        // We will stick to strict string matching based on prompt logic or mapped logic.
-        // Prompt says: "contained in app.features". 
-    };
 
     // To be safe and strictly follow prompt "selected preference string", we use the key directly or a mapping 
     // if the CSV features differ. Let's assume CSV features might contain "lowest-fee", "fastest". 
