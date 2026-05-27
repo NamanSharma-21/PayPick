@@ -33,12 +33,13 @@ function App() {
 
     // Fetch live currency rates when source or destination changes
     useEffect(() => {
+        let active = true;
         const fetchRate = async () => {
             const sourceCurrency = currencyMap[country] || 'USD';
             const destCurrency = currencyMap[destinationCountry] || 'USD';
             
             if (sourceCurrency === destCurrency) {
-                setExchangeRate(1.0);
+                if (active) setExchangeRate(1.0);
                 return;
             }
             
@@ -46,16 +47,19 @@ function App() {
             try {
                 const res = await fetch(`https://open.er-api.com/v6/latest/${sourceCurrency}`);
                 const data = await res.json();
-                if (data && data.rates && data.rates[destCurrency]) {
+                if (active && data && data.rates && data.rates[destCurrency]) {
                     setExchangeRate(data.rates[destCurrency]);
                 }
             } catch (err) {
                 console.error('Failed to fetch exchange rate:', err);
             } finally {
-                setRateLoading(false);
+                if (active) setRateLoading(false);
             }
         };
         fetchRate();
+        return () => {
+            active = false;
+        };
     }, [country, destinationCountry]);
 
     // Live Query for Apps (Fully dynamic in-memory calculations for instant UI feedback)

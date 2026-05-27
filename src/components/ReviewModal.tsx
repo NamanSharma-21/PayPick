@@ -102,7 +102,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({ app, preference, onClo
                                             </div>
                                             <span className="text-[10px] font-medium text-slate-500">{new Date(r.timestamp * 1000).toLocaleDateString()}</span>
                                         </div>
-                                        <p className="text-slate-300 text-sm leading-relaxed">{r.text}</p>
+                                        <p className={`text-sm leading-relaxed ${r.text.trim() ? 'text-slate-300' : 'text-slate-550 italic'}`}>
+                                            {r.text.trim() || 'Rating only - no review comment left.'}
+                                        </p>
                                     </div>
                                 ))}
                             </div>

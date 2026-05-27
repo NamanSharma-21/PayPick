@@ -57,7 +57,9 @@ export const seedDatabaseIfEmpty = async () => {
 
 // Reset DB
 export const resetDatabase = async () => {
-    await db.delete();
-    await db.open();
+    await db.transaction('rw', db.apps, db.reviews, async () => {
+        await db.apps.clear();
+        await db.reviews.clear();
+    });
     await seedDatabaseIfEmpty();
 };
