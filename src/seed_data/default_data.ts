@@ -8,7 +8,16 @@ export const defaultApps: Omit<PaymentApp, 'cached_score'>[] = [
         features: 'social,instant,free',
         base_rating: 4.2,
         base_count: 1500,
-        logo_url: 'https://images.unsplash.com/photo-1616077168079-7e09a677fb2c?w=128&h=128&fit=crop&auto=format' // Premium image
+        logo_url: 'https://images.unsplash.com/photo-1616077168079-7e09a677fb2c?w=128&h=128&fit=crop&auto=format',
+        fixed_fee: 0.00,
+        percent_fee: 1.90,
+        avg_speed_mins: 15,
+        supported_destinations: ['US'],
+        exchange_rate_markup: 0.00,
+        has_nfc: true,
+        has_qr_code: true,
+        has_debit_card: true,
+        has_crypto: true
     },
     {
         id: 'app_2',
@@ -17,7 +26,16 @@ export const defaultApps: Omit<PaymentApp, 'cached_score'>[] = [
         features: 'bitcoin,fast,simple',
         base_rating: 4.1,
         base_count: 1200,
-        logo_url: 'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?w=128&h=128&fit=crop&auto=format'
+        logo_url: 'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?w=128&h=128&fit=crop&auto=format',
+        fixed_fee: 0.00,
+        percent_fee: 1.50,
+        avg_speed_mins: 15,
+        supported_destinations: ['US', 'UK'],
+        exchange_rate_markup: 0.50,
+        has_nfc: true,
+        has_qr_code: true,
+        has_debit_card: true,
+        has_crypto: true
     },
     {
         id: 'app_3',
@@ -26,7 +44,16 @@ export const defaultApps: Omit<PaymentApp, 'cached_score'>[] = [
         features: 'instant,bank-integrated,no-fee',
         base_rating: 3.8,
         base_count: 5000,
-        logo_url: 'https://images.unsplash.com/photo-1563013544-824ae1d704d3?w=128&h=128&fit=crop&auto=format'
+        logo_url: 'https://images.unsplash.com/photo-1563013544-824ae1d704d3?w=128&h=128&fit=crop&auto=format',
+        fixed_fee: 0.00,
+        percent_fee: 0.00,
+        avg_speed_mins: 2,
+        supported_destinations: ['US'],
+        exchange_rate_markup: 0.00,
+        has_nfc: false,
+        has_qr_code: true,
+        has_debit_card: false,
+        has_crypto: false
     },
     {
         id: 'app_4',
@@ -35,7 +62,16 @@ export const defaultApps: Omit<PaymentApp, 'cached_score'>[] = [
         features: 'low fee,international,transparent',
         base_rating: 4.8,
         base_count: 800,
-        logo_url: 'https://images.unsplash.com/photo-1601597111158-2fceff270190?w=128&h=128&fit=crop&auto=format'
+        logo_url: 'https://images.unsplash.com/photo-1601597111158-2fceff270190?w=128&h=128&fit=crop&auto=format',
+        fixed_fee: 0.50,
+        percent_fee: 0.40,
+        avg_speed_mins: 30,
+        supported_destinations: ['US', 'UK', 'IN', 'EU'],
+        exchange_rate_markup: 0.20,
+        has_nfc: true,
+        has_qr_code: false,
+        has_debit_card: true,
+        has_crypto: false
     },
     {
         id: 'app_5',
@@ -44,7 +80,16 @@ export const defaultApps: Omit<PaymentApp, 'cached_score'>[] = [
         features: 'travel,crypto,fast',
         base_rating: 4.6,
         base_count: 1100,
-        logo_url: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=128&h=128&fit=crop&auto=format'
+        logo_url: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=128&h=128&fit=crop&auto=format',
+        fixed_fee: 0.00,
+        percent_fee: 0.50,
+        avg_speed_mins: 15,
+        supported_destinations: ['US', 'UK', 'EU'],
+        exchange_rate_markup: 0.30,
+        has_nfc: true,
+        has_qr_code: true,
+        has_debit_card: true,
+        has_crypto: true
     },
     {
         id: 'app_6',
@@ -53,7 +98,16 @@ export const defaultApps: Omit<PaymentApp, 'cached_score'>[] = [
         features: 'wallet,bill-pay,fast',
         base_rating: 4.0,
         base_count: 9000,
-        logo_url: 'https://images.unsplash.com/photo-1563013544-824ae1d704d3?w=128&h=128&fit=crop&auto=format'
+        logo_url: 'https://images.unsplash.com/photo-1563013544-824ae1d704d3?w=128&h=128&fit=crop&auto=format',
+        fixed_fee: 0.00,
+        percent_fee: 1.00,
+        avg_speed_mins: 5,
+        supported_destinations: ['IN'],
+        exchange_rate_markup: 0.00,
+        has_nfc: true,
+        has_qr_code: true,
+        has_debit_card: true,
+        has_crypto: false
     },
     {
         id: 'app_7',
@@ -62,7 +116,16 @@ export const defaultApps: Omit<PaymentApp, 'cached_score'>[] = [
         features: 'upi,fast,secure',
         base_rating: 4.5,
         base_count: 8500,
-        logo_url: 'https://images.unsplash.com/photo-1559526324-59e2b1324543?w=128&h=128&fit=crop&auto=format'
+        logo_url: 'https://images.unsplash.com/photo-1559526324-59e2b1324543?w=128&h=128&fit=crop&auto=format',
+        fixed_fee: 0.00,
+        percent_fee: 0.00,
+        avg_speed_mins: 2,
+        supported_destinations: ['IN'],
+        exchange_rate_markup: 0.00,
+        has_nfc: false,
+        has_qr_code: true,
+        has_debit_card: false,
+        has_crypto: false
     },
     {
         id: 'app_8',
@@ -71,7 +134,16 @@ export const defaultApps: Omit<PaymentApp, 'cached_score'>[] = [
         features: 'secure,global,slow',
         base_rating: 3.5,
         base_count: 10000,
-        logo_url: 'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=128&h=128&fit=crop&auto=format'
+        logo_url: 'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=128&h=128&fit=crop&auto=format',
+        fixed_fee: 0.30,
+        percent_fee: 2.90,
+        avg_speed_mins: 1440,
+        supported_destinations: ['US', 'UK', 'IN', 'EU'],
+        exchange_rate_markup: 3.00,
+        has_nfc: true,
+        has_qr_code: true,
+        has_debit_card: true,
+        has_crypto: true
     }
 ];
 

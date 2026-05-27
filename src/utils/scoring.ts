@@ -1,6 +1,6 @@
 import { ScoringParams } from '../types';
 
-export const calculateScore = ({ app, reviews, selectedPreference }: ScoringParams): number => {
+export const calculateScore = ({ app, reviews, selectedPreference, transferAmount = 100, destinationCountry }: ScoringParams): number => {
     // 1. Rating Score
     const reviewCount = reviews.length;
     let avgReviewRating = 0;
@@ -38,32 +38,30 @@ export const calculateScore = ({ app, reviews, selectedPreference }: ScoringPara
     // velocity = min(100, recent_reviews.length * 2)
     const velocity = Math.min(100, recentReviews.length * 2);
 
-    // 4. Feature Match
-    // feature_match = 100 if selected preference string is contained in app.features, else 0
+    // 4. Dynamic Preference & Calculator Match
+    let preferenceScore = 0;
 
-    // To be safe and strictly follow prompt "selected preference string", we use the key directly or a mapping 
-    // if the CSV features differ. Let's assume CSV features might contain "lowest-fee", "fastest". 
-    // But usually features are "Low Fees", "Instant Transfer". 
-    // Let's make the matching loose/smart or strict based on prompt "case-insensitive".
-
-    // Prompt: "selected preference string is contained". 
-    // If user selects 'lowest-fee', we check if 'lowest-fee' is in features. 
-    // To be helpful, let's normalize common terms.
-
-    let searchTerms: string[] = [selectedPreference];
-    if (selectedPreference === 'lowest-fee') searchTerms = ['low fee', 'cheap', 'lowest-fee'];
-    if (selectedPreference === 'fastest') searchTerms = ['fast', 'instant', 'speed', 'fastest'];
-    if (selectedPreference === 'best-rated') searchTerms = ['rated', 'top', 'best']; // Less likely to be in features, but following logic.
-
-    const hasMatch = searchTerms.some(term =>
-        app.features.toLowerCase().includes(term.toLowerCase())
-    );
-
-    const featureMatch = hasMatch ? 100 : 0;
+    if (selectedPreference === 'lowest-fee') {
+        // Calculate total fees (fixed + percentage + markup markup)
+        const isInternational = destinationCountry && destinationCountry !== app.country;
+        const markup = isInternational ? app.exchange_rate_markup : 0;
+        
+        const totalFee = app.fixed_fee + (transferAmount * (app.percent_fee / 100)) + (transferAmount * (markup / 100));
+        const feePercent = transferAmount > 0 ? (totalFee / transferAmount) * 100 : 0;
+        
+        // 0% fee -> 100 points, 10% fee or more -> 0 points
+        preferenceScore = Math.max(0, 100 - feePercent * 10);
+    } else if (selectedPreference === 'fastest') {
+        // 0-2 mins -> 100 points, 24h (1440 mins) or more -> 0 points
+        preferenceScore = Math.max(0, 100 - (app.avg_speed_mins / 14.4));
+    } else {
+        // 'best-rated': maps to total rating norm directly
+        preferenceScore = ratingNorm;
+    }
 
     // 5. Final Score
-    // final_score = 0.45*rating_norm + 0.30*sentiment_norm + 0.15*velocity + 0.10*feature_match
-    const finalScore = (0.45 * ratingNorm) + (0.30 * sentimentNorm) + (0.15 * velocity) + (0.10 * featureMatch);
+    // final_score = 0.45*rating_norm + 0.30*sentiment_norm + 0.15*velocity + 0.10*preferenceScore
+    const finalScore = (0.45 * ratingNorm) + (0.30 * sentimentNorm) + (0.15 * velocity) + (0.10 * preferenceScore);
 
     return Number(finalScore.toFixed(2));
 };
