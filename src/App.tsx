@@ -8,6 +8,13 @@ import { AdminPanel } from './components/AdminPanel';
 import { PaymentApp } from './types';
 import { Wallet, Globe, Zap, Star, TrendingDown, Sparkles, CreditCard, QrCode, Smartphone, Coins } from 'lucide-react';
 
+const currencyMap: Record<string, string> = {
+    US: 'USD',
+    UK: 'GBP',
+    IN: 'INR',
+    EU: 'EUR'
+};
+
 function App() {
     const [country, setCountry] = useState('US');
     const [destinationCountry, setDestinationCountry] = useState('US');
@@ -20,6 +27,36 @@ function App() {
         card: false,
         crypto: false
     });
+
+    const [exchangeRate, setExchangeRate] = useState<number>(1.0);
+    const [rateLoading, setRateLoading] = useState<boolean>(false);
+
+    // Fetch live currency rates when source or destination changes
+    useEffect(() => {
+        const fetchRate = async () => {
+            const sourceCurrency = currencyMap[country] || 'USD';
+            const destCurrency = currencyMap[destinationCountry] || 'USD';
+            
+            if (sourceCurrency === destCurrency) {
+                setExchangeRate(1.0);
+                return;
+            }
+            
+            setRateLoading(true);
+            try {
+                const res = await fetch(`https://open.er-api.com/v6/latest/${sourceCurrency}`);
+                const data = await res.json();
+                if (data && data.rates && data.rates[destCurrency]) {
+                    setExchangeRate(data.rates[destCurrency]);
+                }
+            } catch (err) {
+                console.error('Failed to fetch exchange rate:', err);
+            } finally {
+                setRateLoading(false);
+            }
+        };
+        fetchRate();
+    }, [country, destinationCountry]);
 
     // Live Query for Apps (Fully dynamic in-memory calculations for instant UI feedback)
     const apps = useLiveQuery(async () => {
@@ -245,9 +282,14 @@ function App() {
 
                 {/* Corridor Status Badge */}
                 {country !== destinationCountry && (
-                    <div className="mb-6 p-4 rounded-2xl bg-indigo-950/20 border border-indigo-900/30 flex items-center gap-3 text-sm text-indigo-300 animate-pulse">
-                        <Sparkles size={16} />
-                        <span>Comparing international transfer rates from <strong>{country}</strong> to <strong>{destinationCountry}</strong>. Custom exchange rate markups applied.</span>
+                    <div className="mb-6 p-4 rounded-2xl bg-indigo-950/20 border border-indigo-900/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-indigo-300">
+                        <div className="flex items-center gap-3">
+                            <Sparkles size={16} className="text-indigo-400 flex-shrink-0 animate-pulse" />
+                            <span>Comparing international transfer rates from <strong>{country}</strong> to <strong>{destinationCountry}</strong>.</span>
+                        </div>
+                        <div className="text-xs bg-indigo-950 border border-indigo-900 px-3 py-1 rounded-xl font-bold flex items-center gap-1.5 self-start sm:self-auto">
+                            {rateLoading ? 'Loading rate...' : `Live exchange rate: 1 ${currencyMap[country] || 'USD'} = ${exchangeRate.toFixed(4)} ${currencyMap[destinationCountry] || 'USD'}`}
+                        </div>
                     </div>
                 )}
 
@@ -277,6 +319,7 @@ function App() {
                                     onClick={() => setSelectedApp(app)}
                                     transferAmount={transferAmount}
                                     destinationCountry={destinationCountry}
+                                    exchangeRate={exchangeRate}
                                 />
                             ))}
                         </div>

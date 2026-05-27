@@ -8,30 +8,55 @@ interface AppCardProps {
     onClick: () => void;
     transferAmount?: number;
     destinationCountry?: string;
+    exchangeRate?: number;
 }
+
+const currencySymbolMap: Record<string, string> = {
+    USD: '$',
+    GBP: '£',
+    INR: '₹',
+    EUR: '€'
+};
+
+const currencyMap: Record<string, string> = {
+    US: 'USD',
+    UK: 'GBP',
+    IN: 'INR',
+    EU: 'EUR'
+};
 
 export const AppCard: React.FC<AppCardProps> = ({ 
     app, 
     rank, 
     onClick, 
     transferAmount = 100, 
-    destinationCountry 
+    destinationCountry,
+    exchangeRate = 1.0
 }) => {
     // 1. Calculate precise fees
     const isInternational = destinationCountry && destinationCountry !== app.country;
     const markup = isInternational ? app.exchange_rate_markup : 0;
     const calculatedFee = app.fixed_fee + (transferAmount * (app.percent_fee / 100)) + (transferAmount * (markup / 100));
     
-    // 2. Format speed
+    // 2. Format recipient gets
+    const destCurrency = destinationCountry ? (currencyMap[destinationCountry] || 'USD') : (currencyMap[app.country] || 'USD');
+    const destSymbol = currencySymbolMap[destCurrency] || '$';
+
+    const feeInSource = app.fixed_fee + (transferAmount * (app.percent_fee / 100));
+    const amountToConvert = Math.max(0, transferAmount - feeInSource);
+    const finalExchangeRate = exchangeRate * (1 - (markup / 100));
+    const recipientAmount = amountToConvert * finalExchangeRate;
+
+    // 3. Format speed
     const formatSpeed = (mins: number) => {
-        if (mins <= 2) return 'Instant (under 2m)';
-        if (mins <= 15) return 'Within 15 mins';
-        if (mins <= 60) return 'Within 1 hour';
-        if (mins <= 1440) return 'Same day (under 24h)';
+        if (mins <= 2) return 'Instant';
+        if (mins <= 15) return '15 mins';
+        if (mins <= 60) return '1 hour';
+        if (mins <= 1440) return 'Under 24h';
         return `${Math.round(mins / 1440)} days`;
     };
 
-    // 3. Dynamic Pros and Cons
+    // 4. Dynamic Pros and Cons
     const pros: string[] = [];
     const cons: string[] = [];
 
@@ -92,26 +117,34 @@ export const AppCard: React.FC<AppCardProps> = ({
             </div>
 
             {/* Real-time Calculator Metrics Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-5 p-3 rounded-xl bg-slate-950/40 border border-slate-850/60">
-                <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-indigo-950/40 rounded-lg text-indigo-400 border border-indigo-900/30">
-                        <CircleDollarSign size={14} />
+            <div className="grid grid-cols-3 gap-2 mb-5 p-3 rounded-xl bg-slate-950/40 border border-slate-850/60">
+                <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-indigo-950/40 rounded-lg text-indigo-400 border border-indigo-900/30 flex-shrink-0">
+                        <CircleDollarSign size={13} />
                     </div>
                     <div>
-                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Est. Fee</div>
+                        <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Est. Fee</div>
                         <div className="text-xs font-bold text-slate-200">
                             {calculatedFee === 0 ? 'Free' : `$${calculatedFee.toFixed(2)}`}
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-violet-950/40 rounded-lg text-violet-400 border border-violet-900/30">
-                        <Clock size={14} />
+                <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-violet-950/40 rounded-lg text-violet-400 border border-violet-900/30 flex-shrink-0">
+                        <Clock size={13} />
                     </div>
                     <div>
-                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Arrival Speed</div>
-                        <div className="text-xs font-bold text-slate-200">
+                        <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Speed</div>
+                        <div className="text-xs font-bold text-slate-200 truncate max-w-[75px]">
                             {formatSpeed(app.avg_speed_mins)}
+                        </div>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2 border-l border-slate-800/80 pl-2">
+                    <div>
+                        <div className="text-[9px] text-indigo-450 font-bold uppercase tracking-wider">Recipient Gets</div>
+                        <div className="text-xs font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">
+                            {destSymbol}{recipientAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </div>
                     </div>
                 </div>
@@ -137,7 +170,7 @@ export const AppCard: React.FC<AppCardProps> = ({
                     ))}
                     {/* Cons */}
                     {cons.slice(0, 1).map((con, index) => (
-                        <div key={index} className="flex items-center gap-2 text-rose-450">
+                        <div key={index} className="flex items-center gap-2 text-rose-400">
                             <AlertTriangle size={12} className="flex-shrink-0" />
                             <span>{con}</span>
                         </div>
